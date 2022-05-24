@@ -1,0 +1,4 @@
+name: CommandLib
+main: de.f4bii.commandlib.bungee.BungeeCommandPlugin
+version: ${version}
+author: FabiHBBBT
