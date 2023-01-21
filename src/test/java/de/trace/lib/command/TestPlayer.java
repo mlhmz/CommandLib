@@ -1,4 +1,4 @@
 package de.trace.lib.command;
 
-public class TestPlayer {
+public class TestPlayer extends TestSender {
 }
