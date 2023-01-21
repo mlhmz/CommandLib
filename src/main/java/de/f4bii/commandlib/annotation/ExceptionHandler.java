@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Documented
 public @interface ExceptionHandler {
-    Class<? extends Exception>[] value();
+    Class<? extends Throwable>[] value();
 
     String message() default "";
 

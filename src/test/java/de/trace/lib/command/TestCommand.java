@@ -10,7 +10,7 @@ public class TestCommand extends CustomCommand<TestPlayer, String> {
     @SubCommand("{home}")
     public void onHome(
             @Variable("home") String home,
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onHome");
     }
@@ -18,7 +18,7 @@ public class TestCommand extends CustomCommand<TestPlayer, String> {
     @SubCommand("sethome {home}")
     public void onSetHome(
             @Variable("home") String home,
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onSetHome");
     }
@@ -26,23 +26,31 @@ public class TestCommand extends CustomCommand<TestPlayer, String> {
     @SubCommand("delhome {home}")
     public void onDelHome(
             @Variable("home") String home,
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onDelHome");
+    }
+
+    @SubCommand("dgethome {home}")
+    public void onGetHome(
+            @Variable("home") String home,
+            @Sender TestPlayer executor
+    ) {
+        throw new SuccessfulCommand("onGetHome");
     }
 
     @SubCommand("{player} {home}")
     public void onPlayerHome(
             @Variable("player") String player,
             @Variable("home") String home,
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onPlayerHome");
     }
 
     @SubCommand("list")
     public void onList(
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onList");
     }
@@ -50,26 +58,25 @@ public class TestCommand extends CustomCommand<TestPlayer, String> {
     @SubCommand("int {id}")
     public void onList(
             @Variable("id") Integer id,
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onInt");
     }
 
     @NoArgs
-    @SubCommand
     public void onNoArgs(
-            @Executor TestPlayer executor
+            @Sender TestPlayer executor
     ) {
         throw new SuccessfulCommand("onNoArgs");
     }
 
     @SubCommand("help")
-    public void onHelp(@Executor TestPlayer testPlayer) {
+    public void onHelp(@Sender TestPlayer testPlayer) {
         throw new SuccessfulCommand("onHelp");
     }
 
     @ExceptionHandler(NoPermissionException.class)
-    public void exception(@Executor TestPlayer executor, NoPermissionException ex) {
+    public void exception(@Sender TestPlayer executor, NoPermissionException ex) {
         throw ex;
     }
 }
