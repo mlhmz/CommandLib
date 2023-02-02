@@ -72,7 +72,7 @@ public class CustomCommand<S, E> {
     }
 
     /**
-     * Execution of the command
+     * Execution and exception handling of the command
      *
      * @param sender generic command sender
      * @param args arguments of the command
@@ -80,17 +80,28 @@ public class CustomCommand<S, E> {
      */
     public final void execute(S sender, String[] args) throws Throwable {
         try {
-            if (args.length == 0) {
-                noArgs.execute(sender, args);
-                return;
-            }
-            String finArgs = String.join(" ", args);
-            args = finArgs.split("\"?( |$)(?=(([^\"]*\"){2})*[^\"]*$)\"?");
-            SubCommandObject<S> object = getCommandMatchingArguments(sender, args);
-            object.execute(sender, args);
+            processCommandExecution(sender, args);
         } catch (Throwable ex) {
             if (!handleException(ex, sender, args)) throw ex;
         }
+    }
+
+    /**
+     * Processes and delegates the Command Execution to the {@link SubCommandObject}-objects
+     *
+     * @param sender of the command
+     * @param args of the command
+     * @throws Throwable if something went wrong while executing the command
+     */
+    private void processCommandExecution(S sender, String[] args) throws Throwable {
+        if (args.length == 0) {
+            noArgs.execute(sender, args);
+            return;
+        }
+        String finArgs = String.join(" ", args);
+        args = finArgs.split("\"?( |$)(?=(([^\"]*\"){2})*[^\"]*$)\"?");
+        SubCommandObject<S> object = getCommandMatchingArguments(sender, args);
+        object.execute(sender, args);
     }
 
     /**
