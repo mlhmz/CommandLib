@@ -6,10 +6,13 @@ import de.f4bii.commandlib.annotation.SubCommand;
 import de.f4bii.commandlib.exception.CommandNotFoundException;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Slf4j
 public class CustomCommand<S, E> {
@@ -25,18 +28,47 @@ public class CustomCommand<S, E> {
 
     private void loadCommands() {
         for (Method method : getClass().getMethods()) {
-            if (method.isAnnotationPresent(NoArgs.class)) {
-                noargs = new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method);
-            } else if (method.isAnnotationPresent(SubCommand.class)) {
-                commands.add(new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method));
-            } else if (method.isAnnotationPresent(ExceptionHandler.class)) {
-                ExceptionHandler annotation = method.getAnnotation(ExceptionHandler.class);
-                for (Class<? extends Throwable> aClass : annotation.value()) {
-                    exceptions.put(aClass, reflectionHelper.getMethodHandle(method));
-                }
-            }
+            initAnnotations(method);
         }
         commands.sort(SubCommandObject::compareTo);
+    }
+
+    /**
+     * Initializes Annotations for the {@link NoArgs}, {@link SubCommand} and {@link ExceptionHandler}
+     * classes.
+     *
+     * @param method to check annotations for
+     */
+    private void initAnnotations(Method method) {
+        if (method.isAnnotationPresent(NoArgs.class)) {
+            noargs = new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method);
+        } else if (method.isAnnotationPresent(SubCommand.class)) {
+            commands.add(new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method));
+        } else if (method.isAnnotationPresent(ExceptionHandler.class)) {
+            ExceptionHandler annotation = method.getAnnotation(ExceptionHandler.class);
+            initExceptionHandlerAnnotation(method, annotation);
+        }
+    }
+
+    /**
+     * Initializes the {@link ExceptionHandler} Annotation.
+     *
+     * @param method to initialize the annotation for
+     * @param annotation the actual annotation object
+     */
+    private void initExceptionHandlerAnnotation(Method method, ExceptionHandler annotation) {
+        Arrays.stream(annotation.value()).forEach(getMethodHandleConsumer(method));
+    }
+
+    /**
+     * Gets the MethodHandler from the ExceptionHandler annotated class as
+     * Consumer
+     *
+     * @param method to get the method handler from
+     * @return method handler consumer
+     */
+    private Consumer<Class<? extends Throwable>> getMethodHandleConsumer(Method method) {
+        return exception -> exceptions.put(exception, reflectionHelper.getMethodHandle(method));
     }
 
     public final void execute(S sender, String[] args) throws Throwable {
