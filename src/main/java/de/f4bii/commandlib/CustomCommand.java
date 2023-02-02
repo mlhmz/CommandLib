@@ -16,7 +16,7 @@ public class CustomCommand<S, E> {
 
     private final List<SubCommandObject<S>> commands = new ArrayList<>();
     private final HashMap<Class<? extends Throwable>, MethodHandle> exceptions = new HashMap<>();
-    private SubCommandObject<S> noargs;
+    private SubCommandObject<S> noArgs;
     private final ReflectionHelper reflectionHelper = new ReflectionHelper();
 
     public CustomCommand() {
@@ -38,7 +38,7 @@ public class CustomCommand<S, E> {
      */
     private void initAnnotations(Method method) {
         if (method.isAnnotationPresent(NoArgs.class)) {
-            noargs = new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method);
+            noArgs = new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method);
         } else if (method.isAnnotationPresent(SubCommand.class)) {
             commands.add(new SubCommandObject<>(this, method.getAnnotation(SubCommand.class), method));
         } else if (method.isAnnotationPresent(ExceptionHandler.class)) {
@@ -71,7 +71,7 @@ public class CustomCommand<S, E> {
     public final void execute(S sender, String[] args) throws Throwable {
         try {
             if (args.length == 0) {
-                noargs.execute(sender, args);
+                noArgs.execute(sender, args);
                 return;
             }
             String finArgs = String.join(" ", args);
