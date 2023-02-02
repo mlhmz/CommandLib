@@ -23,6 +23,9 @@ public class CustomCommand<S, E> {
         loadCommands();
     }
 
+    /**
+     * Initializes the annotations of the commands and sorts them.
+     */
     private void loadCommands() {
         for (Method method : getClass().getMethods()) {
             initAnnotations(method);
@@ -68,6 +71,13 @@ public class CustomCommand<S, E> {
         return exception -> exceptions.put(exception, reflectionHelper.getMethodHandle(method));
     }
 
+    /**
+     * Execution of the command
+     *
+     * @param sender generic command sender
+     * @param args arguments of the command
+     * @throws Throwable thrown if exception couldn't be handled
+     */
     public final void execute(S sender, String[] args) throws Throwable {
         try {
             if (args.length == 0) {
@@ -83,12 +93,27 @@ public class CustomCommand<S, E> {
         }
     }
 
+    /**
+     * Gets the matching arguments for the command
+     *
+     * @param sender of the command
+     * @param arg of the command
+     * @return {@link SubCommandObject} of the command
+     */
     private SubCommandObject<S> getCommandMatchingArguments(S sender, String[] arg){
         Optional<SubCommandObject<S>> first = commands.stream().filter(sSubCommandObject -> sSubCommandObject.matches(arg))
                 .filter(sSubCommandObject -> sSubCommandObject.canExecute(sender)).findFirst();
         return first.orElseThrow(CommandNotFoundException::new);
     }
 
+    /**
+     * Handles thrown Exceptions to a called command and returns callback if the exception could be handled.
+     *
+     * @param exception to handle
+     * @param sender that executed the command
+     * @param args of the command
+     * @return boolean if exception could be handled
+     */
     protected final boolean handleException(Throwable exception, S sender, String[] args) {
         MethodHandle method = exceptions.get(exception.getClass());
         if (method == null) return false;
