@@ -4,15 +4,12 @@ import de.f4bii.commandlib.annotation.ExceptionHandler;
 import de.f4bii.commandlib.annotation.NoArgs;
 import de.f4bii.commandlib.annotation.SubCommand;
 import de.f4bii.commandlib.exception.CommandNotFoundException;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Slf4j
 public class CustomCommand<S, E> {
